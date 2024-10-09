@@ -2,25 +2,37 @@ package main
 
 import "fmt"
 
-// exchangeToUSD menghitung total USD setelah menukar sejumlah IDR dan SGD ke USD
-func exchangeToUSD(amountIDR float64, exchangeRateUSD_IDR float64, amountSGD float64, exchangeRateUSD_SGD float64) float64 {
-	// Konversi IDR ke USD
-	usdFromIDR := amountIDR / exchangeRateUSD_IDR
-	// Konversi SGD ke USD
-	usdFromSGD := amountSGD / exchangeRateUSD_SGD
-	// Total USD
-	totalUSD := usdFromIDR + usdFromSGD
+// calcPriceOfExcessBaggage menghitung harga bagasi berlebih berdasarkan berat, kuota, dan jenis penerbangan
+func calcPriceOfExcessBaggage(userBaggage int, freeQuotaBaggage int, domesticPrice int, internationalPrice int, flightType string) int {
+    // Hitung berat bagasi berlebih
+    excessBaggage := userBaggage - freeQuotaBaggage
+    if excessBaggage <= 0 {
+        return 0 // Tidak ada biaya jika tidak ada bagasi berlebih
+    }
 
-	return totalUSD
+    // Tentukan harga berdasarkan jenis penerbangan
+    var pricePerKG int
+    if flightType == "domestik" {
+        pricePerKG = domesticPrice
+    } else if flightType == "internasional" {
+        pricePerKG = internationalPrice
+    } else {
+        return 0 // Jenis penerbangan tidak valid
+    }
+
+    // Hitung total biaya
+    totalPrice := excessBaggage * pricePerKG
+    return totalPrice
 }
 
 func main() {
-	// Contoh perhitungan
-	amountIDR := 120000.0
-	exchangeRateUSD_IDR := 15000.0
-	amountSGD := 29.0
-	exchangeRateUSD_SGD := 1.5
+    // Contoh penggunaan
+    beratBagasi := 50
+    kuotaBebasBiaya := 40
+    hargaDomestik := 110000
+    hargaInternasional := 160000
+    jenisPenerbangan := "domestik"
 
-	totalUSD := exchangeToUSD(amountIDR, exchangeRateUSD_IDR, amountSGD, exchangeRateUSD_SGD)
-	fmt.Printf("Total USD: %.2f\n", totalUSD) // Output: 27.33 USD
+    totalHarga := calcPriceOfExcessBaggage(beratBagasi, kuotaBebasBiaya, hargaDomestik, hargaInternasional, jenisPenerbangan)
+    fmt.Printf("Total biaya bagasi berlebih: Rp %d\n", totalHarga) // Output: Rp 1100000
 }
